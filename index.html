@@ -351,6 +351,10 @@
 </div>
 
 <script>
+  // ↓ Cloudflare Worker をデプロイしたら、ここをそのURLに書き換えてください
+  // 例: const API_BASE = 'https://flux-proxy.your-subdomain.workers.dev';
+  const API_BASE = 'https://shiny-star-dae1.18-kota-shobun.workers.dev/';
+
   const $ = id => document.getElementById(id);
 
   // スライダーの数値表示同期
@@ -429,7 +433,7 @@
     if(negative) body.parameters.negative_prompt = negative;
 
     try {
-      const res = await fetch('https://api-inference.huggingface.co/models/' + model, {
+      const res = await fetch(API_BASE + '/models/' + model, {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
