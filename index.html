@@ -443,12 +443,13 @@
       });
 
       if(!res.ok){
-        let detail = '';
+        const rawText = await res.text();
+        let detail = rawText;
         try {
-          const errJson = await res.json();
+          const errJson = JSON.parse(rawText);
           detail = errJson.error || JSON.stringify(errJson);
         } catch(e){
-          detail = await res.text();
+          // JSONでなければそのままテキストを使う
         }
         throw new Error('HTTP ' + res.status + ' — ' + detail);
       }
@@ -456,7 +457,9 @@
       const contentType = res.headers.get('content-type') || '';
       if(contentType.includes('application/json')){
         // モデルロード中などはJSONでエラー/推定時間が返る場合がある
-        const j = await res.json();
+        const rawText2 = await res.text();
+        let j;
+        try { j = JSON.parse(rawText2); } catch(e){ j = { error: rawText2 }; }
         throw new Error(j.error ? j.error + (j.estimated_time ? '（推定待機時間: ' + Math.round(j.estimated_time) + '秒。少し待って再実行してください）' : '') : JSON.stringify(j));
       }
 
